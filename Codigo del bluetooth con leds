@@ -1,0 +1,38 @@
+#include "BluetoothSerial.h"
+
+BluetoothSerial SerialBT;
+// Definimos los pines en un arreglo para que sea más ordenado
+int pinesLeds[] = {12, 14, 27, 26, 25}; 
+
+void setup() {
+  for(int i=0; i<5; i++) {
+    pinMode(pinesLeds[i], OUTPUT);
+  }
+  SerialBT.begin("ESP32_Dilan_5Leds");
+}
+
+void loop() {
+  if (SerialBT.available()) {
+    char dato = SerialBT.read();
+    
+    // Control LED 1
+    if (dato == 'A') digitalWrite(pinesLeds[0], HIGH);
+    if (dato == 'a') digitalWrite(pinesLeds[0], LOW);
+    
+    // Control LED 2
+    if (dato == 'B') digitalWrite(pinesLeds[1], HIGH);
+    if (dato == 'b') digitalWrite(pinesLeds[1], LOW);
+    
+    // Control LED 3
+    if (dato == 'C') digitalWrite(pinesLeds[2], HIGH);
+    if (dato == 'c') digitalWrite(pinesLeds[2], LOW);
+    
+    // Control LED 4
+    if (dato == 'D') digitalWrite(pinesLeds[3], HIGH);
+    if (dato == 'd') digitalWrite(pinesLeds[3], LOW);
+    
+    // Control LED 5
+    if (dato == 'E') digitalWrite(pinesLeds[4], HIGH);
+    if (dato == 'e') digitalWrite(pinesLeds[4], LOW);
+  }
+}
