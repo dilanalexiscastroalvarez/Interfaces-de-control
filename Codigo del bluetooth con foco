@@ -1,0 +1,45 @@
+#include "BluetoothSerial.h"
+
+// Comprobamos si el Bluetooth está habilitado correctamente
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+BluetoothSerial SerialBT;
+
+// Definimos el pin donde conectarás el cable IN del relé
+const int pinRele = 12; 
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Configuramos el pin del relé como salida
+  pinMode(pinRele, OUTPUT);
+  
+  // IMPORTANTE: Si el relé es de lógica inversa, empezamos en HIGH para que esté apagado
+  digitalWrite(pinRele, HIGH); 
+  
+  // Nombre que verás en tu celular para conectar
+  SerialBT.begin("ESP32_Rele_Dilan"); 
+  Serial.println("El dispositivo está listo para vincularse.");
+}
+
+void loop() {
+  if (SerialBT.available()) {
+    char datoRecibido = SerialBT.read();
+    Serial.print("Recibido: ");
+    Serial.println(datoRecibido);
+
+    // Si en App Inventor configuraste el botón para enviar 'A'
+    if (datoRecibido == 'A') {
+      digitalWrite(pinRele, LOW); // ENCIENDE el relé
+      Serial.println("Relé ACTIVADO");
+    } 
+    // Si enviaste 'a' para apagar
+    else if (datoRecibido == 'a') {
+      digitalWrite(pinRele, HIGH); // APAGA el relé
+      Serial.println("Relé DESACTIVADO");
+    }
+  }
+  delay(20);
+}
