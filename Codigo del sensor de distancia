@@ -1,0 +1,45 @@
+#include "BluetoothSerial.h"
+
+BluetoothSerial SerialBT;
+
+const int trigPin = 5;
+const int echoPin = 18;
+const int relePin = 19; // Pin para el relé
+
+void setup() {
+  Serial.begin(115200);
+  SerialBT.begin("ESP32_Dilan"); // Nombre que verás en el celular
+  
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(relePin, OUTPUT);
+  
+  // La mayoría de los relés se apagan con HIGH, asegúrate de probarlo
+  digitalWrite(relePin, LOW); 
+}
+
+void loop() {
+  long duracion;
+  int distancia;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duracion = pulseIn(echoPin, HIGH);
+  distancia = duracion * 0.034 / 2;
+
+  // Lógica del Relé: Se enciende si la distancia es menor a 20cm
+  if (distancia > 0 && distancia < 20) {
+    digitalWrite(relePin, HIGH); // Activa el relé
+  } else {
+    digitalWrite(relePin, LOW);  // Desactiva el relé
+  }
+
+  // Enviar distancia a App Inventor
+  SerialBT.println(distancia);
+  
+  delay(500);
+}
