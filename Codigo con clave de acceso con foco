@@ -1,0 +1,41 @@
+#include "BluetoothSerial.h"
+
+BluetoothSerial SerialBT;
+
+const int pinVerde = 12; // Relé o LED Verde
+const int pinRojo = 14;  // LED Rojo
+String claveCorrecta = "2024"; // <--- Tu contraseña de 4 dígitos
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(pinVerde, OUTPUT);
+  pinMode(pinRojo, OUTPUT);
+  
+  // Si tu relé es de lógica inversa, usa HIGH para apagar al inicio
+  digitalWrite(pinVerde, LOW); 
+  digitalWrite(pinRojo, LOW);
+  
+  SerialBT.begin("ESP32_Teclado_Dilan");
+}
+
+void loop() {
+  if (SerialBT.available()) {
+    String claveRecibida = SerialBT.readString();
+    claveRecibida.trim(); // Limpiar el texto
+
+    if (claveRecibida == claveCorrecta) {
+      Serial.println("ACCESO CONCEDIDO");
+      digitalWrite(pinVerde, HIGH); // Activa Relé/Verde
+      digitalWrite(pinRojo, LOW);
+      delay(3000);                  // Tiempo de apertura
+      digitalWrite(pinVerde, LOW);
+    } 
+    else {
+      Serial.println("ACCESO DENEGADO");
+      digitalWrite(pinVerde, LOW);
+      digitalWrite(pinRojo, HIGH); // Enciende Rojo
+      delay(1500);
+      digitalWrite(pinRojo, LOW);
+    }
+  }
+}
